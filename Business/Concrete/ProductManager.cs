@@ -32,7 +32,7 @@ namespace Business.Concrete
             _productDal = productDal;
             _categoryService = categoryService;
         }
-        [SecuredOperation("product.add")]
+        //[SecuredOperation("product.add")]
         [ValidationAspect(typeof(ProductValidator))]
         [CacheRemoveAspect("IProduceService.Get")]
         public IResult Add(Product product)
@@ -95,9 +95,9 @@ namespace Business.Concrete
             var result = _productDal.GetAll(p => p.CategoryId == categoryId).Count;
             if (result >= 10)
             {
-                return new SuccessResult(Messages.ProductCountOfCategoryEror);
+                return new ErrorResult(Messages.ProductCountOfCategoryEror);
             }
-            return new ErrorResult();
+            return new SuccessResult();
         }
 
         private IResult CheckIfProductNameExists(string productName)
@@ -107,18 +107,18 @@ namespace Business.Concrete
             var result = _productDal.GetAll(p => p.ProductName == productName).Any();
             if (result)
             {
-                return new SuccessResult(Messages.ProductNameAlreadyExists);
+                return new ErrorResult(Messages.ProductNameAlreadyExists);
             }
-            return new ErrorResult();
+            return new SuccessResult();
         }
         private IResult CheckIfCategoryLimitExceded()
         {
             var result = _categoryService.GetAll();
             if (result.Data.Count>15)
             {
-                return new SuccessResult(Messages.CategoryLimitExceded);
+                return new ErrorResult(Messages.CategoryLimitExceded);
             }
-            return new ErrorResult("Kategoriyi sayısı 15den büyük olmalıdır.");
+            return new SuccessResult();
         }
         [TransactionScopeAspect]
         [PerformanceAspect(5)]
